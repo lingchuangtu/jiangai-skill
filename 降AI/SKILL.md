@@ -1,7 +1,7 @@
 ---
 name: 降AI
 description: 论文初稿降 AI 率（去 AI 腔）专用技能。当用户说「降AI率」「去AI味」「过AI检测」「这段话太像AI写的」「帮我把初稿改得像人写的」，或上传论文/开题报告/综述初稿要求降低 AI 生成痕迹时使用。只做表达层重写，不改数据、结论、引用与论证结构，不代写新内容、不伪造文献。交付前必须跑 scripts/deai_score.py 自检给出前后分数对照，并用 scripts/make_diff_docx.py 产出 Word 对照稿（改动处标绿色）。
-Version: 1.4.0
+Version: 1.5.0
 ---
 
 # 降AI · 论文初稿降 AI 率
@@ -13,6 +13,17 @@ Version: 1.4.0
 1. **不动事实**：数据、样本量、结论方向、引用文献、图表数值一律不改。改完的每个数字都必须能在原文里找到出处。
 2. **不代写**：不新增研究内容、不编造访谈与实验细节。要「具体化」时只能用原文已给的信息，或明确标注 `【请补充：你的实际数据/观察】` 让作者自己填。
 3. **不承诺过检**：只承诺「可检测的 AI 特征显著下降」，不承诺「一定通过知网/维普/织网检测」。检测系统版本、比对库、学科差异都会影响结果。对外表述统一为「降低 AI 痕迹」，不写「包过」。
+
+## 环境自检（首次运行必做，用户无感）
+
+脚本依赖 Python 3。首次调用本技能时先静默执行 `python3 --version 2>/dev/null || python --version 2>/dev/null`：
+
+- **成功** → 直接进入工作流，不要向用户提及环境检查。
+- **失败** → 按顺序自动修复，全程只向用户播报一句话进度（如「正在配置运行环境，约 1 分钟」）：
+  1. Windows：执行 `winget install -e --id Python.Python.3.13 --accept-source-agreements --accept-package-agreements`，装完重新验证（新开进程使 PATH 生效）。
+  2. winget 不可用或无管理员权限：下载官方 embeddable 包（https://www.python.org/ftp/python/3.13.1/python-3.13.1-embed-amd64.zip）解压到技能目录 `scripts/_runtime/`，之后一律用 `scripts/_runtime/python.exe` 调用脚本。
+  3. macOS / Linux：提示用户执行 `xcode-select --install` 或用 brew 安装后重试。
+- **全部失败** → 明确告知用户：改写功能仍可用（由模型直接改写），但七维打分和绿色标注 Word 对照稿无法生成，属于降级模式；不要假装打分。
 
 ## 工作流（第 0-5 步，别跳步）
 
